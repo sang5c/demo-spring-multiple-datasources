@@ -1,22 +1,30 @@
 
 spring:
   jpa:
+    database: sql_server
+    database-platform: org.hibernate.dialect.SQLServerDialect
+    show-sql: true
     hibernate:
       ddl-auto: create
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.SQLServerDialect
+#        dialect: org.hibernate.dialect.SQLServerDialect
         show_sql: true
         format_sql: true
+        use_sql_comments: true
+    generate-ddl: true
   datasource:
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
     url: jdbc:sqlserver://localhost:1433;databaseName=master;encrypt=false;
     username: sa
     password: Pass@word
+
   second-datasource:
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
     url: jdbc:sqlserver://localhost:1433;databaseName=master;encrypt=false;
     username: sa
     password: Pass@word
 
-
+logging:
+  level:
+    root: INFO
