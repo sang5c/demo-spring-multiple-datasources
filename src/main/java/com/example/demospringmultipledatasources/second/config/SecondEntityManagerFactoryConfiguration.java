@@ -1,6 +1,8 @@
 package com.example.demospringmultipledatasources.second.config;
 
 import com.example.demospringmultipledatasources.second.repository.Second;
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateProperties;
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateSettings;
 import org.springframework.boot.autoconfigure.orm.jpa.JpaProperties;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.context.annotation.Bean;
@@ -12,38 +14,28 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
+import java.util.Map;
 import java.util.Objects;
 
 @Configuration(proxyBeanMethods = false)
 public class SecondEntityManagerFactoryConfiguration {
 
-    /**
-     * JpaProperties가 이미 빈으로 등록되어 있다.
-     * 변경이 필요한 경우만 아래와 같은 형식으로 빈을 재정의 한다.
-     */
-    // @Bean
-    // @ConfigurationProperties("spring.jpa")
-    // public JpaProperties firstJpaProperties() {
-    //     return new JpaProperties();
-    // }
-
-    // TODO: EntityManagerFactory
     @Bean
-    public LocalContainerEntityManagerFactoryBean secondEntityManagerFactory(DataSource secondDataSource, JpaProperties jpaProperties) {
+    public LocalContainerEntityManagerFactoryBean secondEntityManagerFactory(DataSource secondDataSource, JpaProperties jpaProperties, HibernateProperties hibernateProperties) {
+        Map<String, Object> properties = hibernateProperties.determineHibernateProperties(jpaProperties.getProperties(), new HibernateSettings());
         EntityManagerFactoryBuilder builder = createEntityManagerFactoryBuilder(jpaProperties);
         return builder.dataSource(secondDataSource)
                 .packages(Second.class)
                 .persistenceUnit("secondDs")
+                .properties(properties)
                 .build();
     }
 
-    // TODO: 설명
     private EntityManagerFactoryBuilder createEntityManagerFactoryBuilder(JpaProperties jpaProperties) {
         JpaVendorAdapter jpaVendorAdapter = createJpaVendorAdapter(jpaProperties);
         return new EntityManagerFactoryBuilder(jpaVendorAdapter, jpaProperties.getProperties(), null);
     }
 
-    // TODO: 설명
     private JpaVendorAdapter createJpaVendorAdapter(JpaProperties jpaProperties) {
         HibernateJpaVendorAdapter hibernateJpaVendorAdapter = new HibernateJpaVendorAdapter();
         hibernateJpaVendorAdapter.setDatabasePlatform(jpaProperties.getDatabasePlatform());
