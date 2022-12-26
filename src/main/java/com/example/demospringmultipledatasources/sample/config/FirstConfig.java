@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @Configuration(proxyBeanMethods = false)
-@EnableJpaRepositories(basePackageClasses = Sample.class, entityManagerFactoryRef = "firstEntityManagerFactory")
+@EnableJpaRepositories(basePackageClasses = Sample.class, entityManagerFactoryRef = "entityManagerFactory")
 public class FirstConfig {
 
 }

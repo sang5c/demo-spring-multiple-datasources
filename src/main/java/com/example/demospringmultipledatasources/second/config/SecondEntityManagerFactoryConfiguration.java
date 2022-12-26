@@ -20,11 +20,16 @@ import java.util.Objects;
 @Configuration(proxyBeanMethods = false)
 public class SecondEntityManagerFactoryConfiguration {
 
+    @Bean(name = "secondTransactionManager")
+    public PlatformTransactionManager secondTransactionManager(LocalContainerEntityManagerFactoryBean secondEntityManagerFactory) {
+        return new JpaTransactionManager(Objects.requireNonNull(secondEntityManagerFactory.getObject()));
+    }
+
     @Bean
     public LocalContainerEntityManagerFactoryBean secondEntityManagerFactory(DataSource secondDataSource, JpaProperties jpaProperties, HibernateProperties hibernateProperties) {
         Map<String, Object> properties = hibernateProperties.determineHibernateProperties(jpaProperties.getProperties(), new HibernateSettings());
-        EntityManagerFactoryBuilder builder = createEntityManagerFactoryBuilder(jpaProperties);
-        return builder.dataSource(secondDataSource)
+        return createEntityManagerFactoryBuilder(jpaProperties)
+                .dataSource(secondDataSource)
                 .packages(Second.class)
                 .persistenceUnit("secondDs")
                 .properties(properties)
@@ -45,10 +50,4 @@ public class SecondEntityManagerFactoryConfiguration {
         return hibernateJpaVendorAdapter;
     }
 
-    @Bean(name = "secondTransactionManager")
-    public PlatformTransactionManager secondTransactionManager(LocalContainerEntityManagerFactoryBean secondEntityManagerFactory) {
-        return new JpaTransactionManager(Objects.requireNonNull(secondEntityManagerFactory.getObject()));
-    }
-
 }
-

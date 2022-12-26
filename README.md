@@ -15,9 +15,22 @@ docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=Pass@word" \
 
 ### Custom DataSource!
 ```java
+@Configuration
+public class JpaPropertiesConfig {
+  @Bean
+  @ConfigurationProperties("spring.jpa")
+  public JpaProperties jpaProperties() {
+    return new JpaProperties();
+  }
 
+  @Bean
+  @ConfigurationProperties("spring.jpa.hibernate")
+  public HibernateProperties hibernateProperties() {
+    return new HibernateProperties();
+  }
+}
 ```
-- 별도의 JpaProperties를 사용하려면 위와 같이 작성합니다.
+- 2개 이상의 datasource 사용시 위 bean들이 자동 설정되지 않는다.
 
 ```java
 
@@ -39,7 +52,7 @@ public class MyDataSourceConfiguration {
 }
 ```
 
-- `app.datasource`로 시작하는 properties를 읽어 DataSource를 생성합니다.
+- `spring.datasource`로 시작하는 properties를 읽어 DataSource를 생성합니다.
     - 읽어오는 값은 DataSourceProperties 클래스를 통해 확인 가능합니다.
 - type을 지정하지 않으면 아래 목록중 가능한 DataSource를 찾아서 생성합니다.
     - Hikari (com.zaxxer.hikari.HikariDataSource)

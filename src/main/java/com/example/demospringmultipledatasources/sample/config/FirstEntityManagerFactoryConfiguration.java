@@ -4,7 +4,6 @@ import com.example.demospringmultipledatasources.sample.repository.Sample;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateProperties;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateSettings;
 import org.springframework.boot.autoconfigure.orm.jpa.JpaProperties;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,17 +23,17 @@ public class FirstEntityManagerFactoryConfiguration {
 
     @Primary
     @Bean
-    public PlatformTransactionManager transactionManager(LocalContainerEntityManagerFactoryBean firstEntityManagerFactory) {
-        return new JpaTransactionManager(Objects.requireNonNull(firstEntityManagerFactory.getObject()));
+    public PlatformTransactionManager transactionManager(LocalContainerEntityManagerFactoryBean entityManagerFactory) {
+        return new JpaTransactionManager(Objects.requireNonNull(entityManagerFactory.getObject()));
     }
 
     // TODO: determineHibernateProperties
     @Primary
     @Bean
-    public LocalContainerEntityManagerFactoryBean firstEntityManagerFactory(DataSource firstDataSource, JpaProperties jpaProperties, HibernateProperties hibernateProperties) {
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource firstDataSource, JpaProperties jpaProperties, HibernateProperties hibernateProperties) {
         Map<String, Object> properties = hibernateProperties.determineHibernateProperties(jpaProperties.getProperties(), new HibernateSettings());
-        EntityManagerFactoryBuilder builder = createEntityManagerFactoryBuilder(jpaProperties);
-        return builder.dataSource(firstDataSource)
+        return createEntityManagerFactoryBuilder(jpaProperties)
+                .dataSource(firstDataSource)
                 .packages(Sample.class)
                 .persistenceUnit("firstDs")
                 .properties(properties)
@@ -55,4 +54,3 @@ public class FirstEntityManagerFactoryConfiguration {
         return hibernateJpaVendorAdapter;
     }
 }
-
